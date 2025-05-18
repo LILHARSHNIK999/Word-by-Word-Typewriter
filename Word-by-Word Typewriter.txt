@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Word-by-Word Typewriter</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      background-color: white;
+      margin: 0;
+      padding: 0;
+      font-family: 'IBM Plex Mono', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    #screenshot-area {
+      background-color: white;
+      padding: 40px 20px;
+      width: 400px;
+      font-size: 26px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      text-align: justify; /* JUSTIFY TEXT */
+      min-height: 300px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      border-radius: 6px;
+    }
+
+    textarea {
+      margin-top: 20px;
+      width: 400px;
+      height: 120px;
+      padding: 10px;
+      font-size: 16px;
+      font-family: 'IBM Plex Mono', monospace;
+      resize: none;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      border: none;
+      border-radius: 6px;
+    }
+
+    .button-row {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      position: relative;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-family: 'IBM Plex Mono', monospace;
+      cursor: pointer;
+      border-radius: 5px;
+      border: none;
+      background-color: #000;
+      color: white;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #333;
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 220px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      border-radius: 5px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -110px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 12px;
+      line-height: 1.2;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .tooltip .tooltiptext::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #555 transparent transparent transparent;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      color: #333;
+      font-size: 14px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="screenshot-area"></div>
+
+  <textarea id="textInput" placeholder="Type your message here..."></textarea>
+
+  <div class="button-row">
+    <div class="tooltip">
+      <button onclick="typewriterEffect()">Animate</button>
+      <span class="tooltiptext">Click Win + G to screen record animation</span>
+    </div>
+    <button onclick="downloadImage()">Download</button>
+  </div>
+
+  <footer>© 2025 PLUTO-X &amp; LILHARSHNIK</footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <script>
+    function addWordSpacing(text) {
+      return text
+        .split('\n')
+        .map(line =>
+          line
+            .split(' ')
+            .map(word => word.trim())
+            .join(' ')
+        ).join('\n');
+    }
+
+    document.getElementById("textInput").addEventListener("input", () => {
+      const input = document.getElementById("textInput").value;
+      const formatted = addWordSpacing(input);
+      document.getElementById("screenshot-area").innerText = formatted;
+    });
+
+    function typewriterEffect() {
+      const input = document.getElementById("textInput").value;
+      const words = input.trim().split(/\s+/);
+      const outputDiv = document.getElementById("screenshot-area");
+      outputDiv.innerText = "";
+
+      let i = 0;
+
+      function typeNextWord() {
+        if (i < words.length) {
+          if (i > 0) outputDiv.innerText += " ";
+          outputDiv.innerText += words[i];
+          i++;
+          setTimeout(typeNextWord, 250);
+        }
+      }
+
+      typeNextWord();
+    }
+
+    function downloadImage() {
+      html2canvas(document.querySelector("#screenshot-area")).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "typed-text.png";
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+  </script>
+
+</body>
+</html>
